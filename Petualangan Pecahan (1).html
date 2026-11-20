@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Petualangan Pecahan</title>
+<style>
+:root{--bg:#fffdf8;--fg:#2a2622;--muted:#6b645b;--card:#fff;--line:#d9d0c3;--acc:#c2410c;--soft:#fdf0e0;--fill:#e0884a;--empty:#f6e7d0;--g1:#d9534f;--g2:#e8a33d;--g3:#4c9a5a;--g4:#cfcfcf;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1a17;--fg:#f0ebe3;--muted:#a8a095;--card:#25221e;--line:#3d3830;--acc:#f59e63;--soft:#2e2820;--empty:#3a3228;--g4:#555}}
+:root[data-theme="dark"]{--bg:#1c1a17;--fg:#f0ebe3;--muted:#a8a095;--card:#25221e;--line:#3d3830;--acc:#f59e63;--soft:#2e2820;--empty:#3a3228;--g4:#555}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;line-height:1.5}
+main{max-width:860px;margin:0 auto;padding:12px 12px 40px}
+h1{font-size:1.4rem;margin:4px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+button,select,input[type=text],input[type=password]{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+button{cursor:pointer;background:var(--acc);color:#fff;border-color:transparent;font-weight:600}
+button.alt{background:var(--card);color:var(--fg);border-color:var(--line)}
+button:disabled{opacity:.5}
+.av{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.av button{font-size:1.6rem;padding:4px 10px;background:var(--soft);color:inherit;border:2px solid transparent}
+.av button.on{border-color:var(--acc)}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.bar .sp{flex:1}
+#timer{font-weight:700;font-variant-numeric:tabular-nums;padding:6px 12px;border-radius:10px;background:var(--soft)}
+#timer.low{background:#d9534f;color:#fff}
+canvas{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line);touch-action:none;background:#fff}
+#dp{display:grid;grid-template-columns:repeat(3,52px);gap:4px;justify-content:center;margin:10px 0}
+#dp button{padding:10px 0;font-size:1.2rem}
+#act{display:block;margin:10px auto;font-size:1.05rem}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--soft);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-size:.9rem}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:calc(12px + env(safe-area-inset-top,0px)) 10px 20px;z-index:20}
+.modal[hidden],[hidden]{display:none!important}
+.box{background:var(--bg);border-radius:14px;max-width:720px;width:100%;padding:16px;border:1px solid var(--line)}
+.story{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.story h3{margin:0 0 4px;color:var(--acc);font-size:1rem}
+.story p{margin:4px 0}
+.fig{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.fig figure{margin:0;text-align:center;font-size:.85rem}
+.opt{display:block;margin:6px 0;padding:6px 8px;border-radius:8px;cursor:pointer}
+.opt:hover{background:var(--soft)}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left}
+th{background:var(--soft)}
+.wrap{overflow-x:auto}
+.bat{width:130px;height:24px;border:2px solid var(--fg);border-radius:5px;margin:0 auto 3px;background:var(--empty);overflow:hidden}
+.bat i{display:block;height:100%;background:var(--g3)}
+.grid{display:grid;grid-template-columns:repeat(10,15px);gap:2px;justify-content:center}
+.grid b{width:15px;height:15px;border-radius:3px;display:block}
+.leg{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;font-size:.85rem;margin-top:6px}
+.leg span::before{content:"";display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;background:var(--c)}
+.seg{display:grid;grid-template-columns:repeat(20,1fr);gap:1px;width:240px;max-width:100%}
+.seg b{height:16px;background:var(--empty);display:block}.seg b.on{background:var(--fill)}
+.row{display:flex;align-items:center;gap:8px;justify-content:center;margin:4px 0}
+.big{font-size:2.6rem;font-weight:800;color:var(--acc)}
+.ok{color:var(--g3);font-weight:700}.no{color:var(--g1);font-weight:700}.half{color:var(--g2);font-weight:700}
+.note{font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<section id="start" class="card">
+<h1>🗺️ Petualangan Pecahan</h1>
+<p>Jelajahi 4 wilayah, temukan 10 peti soal, lalu jawab semuanya. Kamu punya <b>1 jam</b> sejak menekan Mulai. Benar atau salah baru terlihat setelah kamu selesai.</p>
+<p><label>Nama pemain:<br><input type="text" id="nm" maxlength="16" placeholder="Tulis namamu"></label></p>
+<div>Pilih karakter:</div><div class="av" id="avs"></div>
+<p><button id="go">▶ Mulai Petualangan</button> <button class="alt" id="seeres" hidden>📊 Lihat Hasil</button> <button class="alt" id="tbtn1">🔒 Ruang Guru</button></p>
+<p class="note" id="hm" hidden>Kamu sudah menyelesaikan petualangan ini, jadi tidak bisa mengulang. Tekan “Lihat Hasil” untuk melihat nilaimu lagi.</p>
+<p id="rp" hidden><input type="password" id="rpw" placeholder="Kata sandi main lagi"> <button id="rbtn">🔁 Main Lagi</button> <span class="note" id="rm"></span></p>
+<p class="note" id="conn">Menghubungkan ke ruang bermain…</p>
+</section>
+
+<section id="game" hidden>
+<div class="bar">
+<input type="text" id="nm2" maxlength="16" style="width:140px" aria-label="Nama pemain">
+<span class="sp"></span>
+<span id="prog" class="chip">0/10 terjawab</span>
+<span id="timer">60:00</span>
+<button id="fin">Selesai ✔</button>
+</div>
+<canvas id="cv" width="640" height="400"></canvas>
+<button id="act" hidden></button>
+<div id="dp"><span></span><button data-d="0,-1">▲</button><span></span><button data-d="-1,0">◀</button><button data-d="0,1">▼</button><button data-d="1,0">▶</button></div>
+<p class="note" style="text-align:center">Gerakkan karakter dengan tombol panah, WASD, tombol di atas, atau ketuk peta. Dekati peti 📦 untuk membuka soal.</p>
+<div class="card"><b>Teman yang sedang bermain</b><div class="chips" id="pl" style="margin-top:6px"></div></div>
+<button class="alt" id="tbtn2">🔒 Ruang Guru</button>
+</section>
+
+<section id="res" class="card" hidden></section>
+</main>
+<div id="modal" class="modal" hidden><div class="box" id="mbox"></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const PASS_HASH="3baf5407b76070e6862b11dc8d19b61b6facb643ea3f9f404a4f441e047c3670";
+const AV=["🦊","🐼","🐯","🐸","🦄","🐙","🐧","🦁"];
+const LS={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- gambar ---------- */
+function pie(n,k){let s='<svg viewBox="0 0 100 100" width="100" height="100">';
+ for(let i=0;i<n;i++){const a=(-90+i*360/n)*Math.PI/180,b=(-90+(i+1)*360/n)*Math.PI/180;
+  s+=`<path d="M50 50 L${(50+42*Math.cos(a)).toFixed(1)} ${(50+42*Math.sin(a)).toFixed(1)} A42 42 0 0 1 ${(50+42*Math.cos(b)).toFixed(1)} ${(50+42*Math.sin(b)).toFixed(1)} Z" fill="${i<k?'var(--fill)':'var(--empty)'}" stroke="var(--fg)" stroke-width="1.2"/>`}
+ return s+'</svg>'}
+const FIG=[
+()=>'<div class="fig">'+[[8,4,'Cokelat'],[4,3,'Keju'],[6,2,'Kacang']].map(([n,k,t])=>`<figure>${pie(n,k)}<figcaption>${t}: dimakan ${k} dari ${n}</figcaption></figure>`).join('')+'</div>',
+()=>'<div class="fig">'+[['Ayah','3/4',75],['Ibu','0,6',60],['Kakak','45%',45],['Adik','1/2',50]].map(([n,t,p])=>`<figure><div class="bat"><i style="width:${p}%"></i></div>Ponsel ${n}<br><b>${t}</b></figure>`).join('')+'</div>',
+()=>{let c='';[['var(--g1)',40],['var(--g2)',30],['var(--g3)',25],['var(--g4)',5]].forEach(([k,n])=>{for(let i=0;i<n;i++)c+=`<b style="background:${k}"></b>`});
+ return `<div class="fig"><div><div class="grid">${c}</div><div class="leg"><span style="--c:var(--g1)">cabai</span><span style="--c:var(--g2)">tomat</span><span style="--c:var(--g3)">bayam</span><span style="--c:var(--g4)">kosong</span></div></div></div>`},
+()=>'<div>'+[['Rina','2/5',8],['Doni','0,45',9],['Sinta','80%',16]].map(([n,t,k])=>{let b='';for(let i=0;i<20;i++)b+=`<b class="${i<k?'on':''}"></b>`;return `<div class="row"><b style="width:52px;text-align:right">${n}</b><div class="seg">${b}</div><b style="width:40px">${t}</b></div>`}).join('')+'<div class="leg"><span style="--c:var(--fill)">sudah dibaca</span><span style="--c:var(--empty)">belum dibaca</span></div></div>'];
+
+/* ---------- soal ---------- */
+const S=[
+{t:"🥞 Martabak Manis",p:"Ayah membeli tiga martabak manis yang sama besar. Martabak cokelat dipotong 8 bagian sama besar dan 4 potong sudah dimakan. Martabak keju dipotong 4 bagian dan 3 potong sudah dimakan. Martabak kacang dipotong 6 bagian dan 2 potong sudah dimakan."},
+{t:"🔋 Baterai Ponsel Keluarga",p:"Sore hari, Rina mengecek sisa baterai ponsel keluarganya. Ponsel Ayah tersisa 3/4 bagian, ponsel Ibu 0,6 bagian, ponsel Kakak 45%, dan ponsel Adik 1/2 bagian."},
+{t:"🌱 Kebun Pak Tani",p:"Kebun Pak Tani berbentuk persegi dan dibagi menjadi 100 petak sama besar. Cabai ditanam pada 2/5 bagian, tomat pada 0,3 bagian, dan bayam pada 25% bagian. Sisanya dibiarkan kosong."},
+{t:"📚 Membaca di Perpustakaan",p:"Rina, Doni, dan Sinta meminjam buku cerita yang sama tebal. Dalam satu minggu, Rina membaca 2/5 bagian buku, Doni membaca 0,45 bagian, dan Sinta membaca 80% bagian."}];
+const Q=[
+{s:0,k:"multi",q:"Bagian martabak cokelat yang dimakan adalah 4/8. Pilih DUA pecahan yang senilai dengan 4/8!",o:["2/4","3/8","3/6","1/4"],a:[0,2]},
+{s:0,k:"one",q:"Urutan bagian martabak yang dimakan dari yang paling banyak ke paling sedikit adalah …",o:["keju, cokelat, kacang","cokelat, keju, kacang","kacang, cokelat, keju","keju, kacang, cokelat"],a:0},
+{s:0,k:"tf",q:"Tentukan pernyataan berikut Benar atau Salah!",r:[["Martabak keju yang dimakan lebih banyak daripada martabak cokelat.",1],["Bagian martabak kacang yang dimakan kurang dari setengah martabak.",1],["Bagian martabak kacang yang dimakan lebih banyak daripada martabak cokelat.",0],["Martabak cokelat dan martabak keju dimakan sama banyak.",0]]},
+{s:1,k:"match",q:"Jodohkan sisa baterai dengan bentuk lain yang nilainya sama!",l:["Ponsel Ayah: 3/4","Ponsel Ibu: 0,6","Ponsel Kakak: 45%"],o:["3/5","9/20","0,75","4/5"],a:[2,0,1]},
+{s:1,k:"one",q:"Urutan sisa baterai dari yang paling sedikit ke paling banyak adalah …",o:["Ayah, Ibu, Adik, Kakak","Kakak, Adik, Ibu, Ayah","Kakak, Ibu, Adik, Ayah","Adik, Kakak, Ibu, Ayah"],a:1},
+{s:1,k:"multi",q:"Pilih DUA ponsel yang sisa baterainya lebih dari 50%!",o:["Ponsel Ayah","Ponsel Ibu","Ponsel Kakak","Ponsel Adik"],a:[0,1]},
+{s:2,k:"tf",q:"Tentukan pernyataan berikut Benar atau Salah!",r:[["Lahan cabai lebih luas daripada lahan tomat.",1],["Lahan bayam sama luas dengan 1/4 bagian kebun.",1],["0,3 sama nilainya dengan 3/100.",0],["Lahan bayam lebih luas daripada lahan tomat.",0]]},
+{s:2,k:"one",q:"Pernyataan yang benar tentang perbandingan luas lahan adalah …",o:["2/5 < 0,3","0,3 > 25%","25% > 2/5","2/5 = 0,3"],a:1},
+{s:3,k:"match",q:"Jodohkan pernyataan dengan nama anak yang tepat!",l:["Membaca bagian buku paling banyak","Membaca bagian buku paling sedikit","Membaca 45/100 bagian buku"],o:["Rina","Doni","Sinta"],a:[2,0,1]},
+{s:3,k:"multi",q:"Pilih DUA bentuk yang nilainya sama dengan bagian buku yang dibaca Rina (2/5)!",o:["0,4","40%","25%","0,25"],a:[0,1]}];
+const L="ABCD";
+const ST=[[70,75],[170,135],[260,75],[400,75],[490,140],[590,85],[80,295],[240,335],[400,305],[560,325]];
+const ZN=[[0,0,"#fde8c8","🥞 Pasar Martabak"],[320,0,"#d8ecfb","🔋 Kota Baterai"],[0,200,"#d9f0d3","🌱 Kebun Pak Tani"],[320,200,"#eadcf7","📚 Perpustakaan"]];
+
+/* ---------- state ---------- */
+let st=LS.get("tka_state"),room=null,db=null,usr=null,uid=null,peers=[],av=AV[0];
+const ready=(async()=>{try{if(window.claude){[room,db,usr]=await Promise.all([claude.use("room"),claude.use("db"),claude.use("user")]);
+ uid=usr?await usr.id():null}}catch(e){}
+ if(!uid){uid=LS.get("tka_uid")||("t"+Math.random().toString(36).slice(2,10));LS.set("tka_uid",uid)}
+ $("conn").textContent=(room&&db)?"🟢 Terhubung. Teman sekelas akan terlihat saat bermain.":"🟠 Mode sendiri: koneksi kelas belum tersedia, nilai tidak terkirim ke guru."
+})();
+$("avs").innerHTML=AV.map((a,i)=>`<button class="${i?'':'on'}" data-a="${a}">${a}</button>`).join("");
+$("avs").onclick=e=>{const b=e.target.closest("button");if(!b)return;av=b.dataset.a;[...$("avs").children].forEach(x=>x.classList.toggle("on",x===b))};
+const save=()=>LS.set("tka_state",st);
+const answered=i=>{const a=st.ans[i];if(a==null)return false;const k=Q[i].k;return k=="one"?true:k=="multi"?a.length>0:a.some(v=>v!==null&&v!==-1)};
+const nAns=()=>Q.filter((_,i)=>answered(i)).length;
+
+/* ---------- mulai ---------- */
+$("go").onclick=async()=>{const n=$("nm").value.trim();if(!n){$("nm").focus();return}
+ st={name:n,av,start:Date.now(),ans:Array(10).fill(null),done:false};save();await ready;
+ try{if(db)await db.collection("results").doc(uid).set({name:n,av,status:"mengerjakan",startedAt:Date.now()})}catch(e){}
+ enter()};
+function enter(){$("start").hidden=true;$("res").hidden=true;$("game").hidden=false;$("nm2").value=st.name;
+ me.x=me.x||320;me.y=me.y||200;tick();pub(true);ready.then(joinRoom)}
+$("nm2").onchange=()=>{st.name=$("nm2").value.trim()||st.name;save();pub(true)};
+
+/* ---------- timer ---------- */
+function tick(){clearInterval(tick.i);tick.i=setInterval(()=>{if(st.done)return;const r=Math.max(0,3600-Math.floor((Date.now()-st.start)/1000));
+ $("timer").textContent="⏱ "+String(Math.floor(r/60)).padStart(2,"0")+":"+String(r%60).padStart(2,"0");$("timer").classList.toggle("low",r<300);
+ if(r<=0)finish(true)},500)}
+
+/* ---------- dunia ---------- */
+const cv=$("cv"),cx=cv.getContext("2d"),me={x:0,y:0},keys={},dir={x:0,y:0};let tgt=null,near=-1,lastPub=0;
+addEventListener("keydown",e=>{if(/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))return;keys[e.key.toLowerCase()]=1;if(e.key.startsWith("Arrow"))e.preventDefault();if((e.key=="Enter"||e.key=="e")&&near>=0&&$("modal").hidden)openQ(near)});
+addEventListener("keyup",e=>delete keys[e.key.toLowerCase()]);
+document.querySelectorAll("#dp button").forEach(b=>{const [dx,dy]=b.dataset.d.split(",").map(Number);
+ b.onpointerdown=e=>{e.preventDefault();dir.x=dx;dir.y=dy;tgt=null};["pointerup","pointerleave","pointercancel"].forEach(ev=>b["on"+ev]=()=>{dir.x=dir.y=0})});
+cv.onpointerdown=e=>{const r=cv.getBoundingClientRect();tgt={x:(e.clientX-r.left)*640/r.width,y:(e.clientY-r.top)*400/r.height}};
+$("act").onclick=()=>near>=0&&openQ(near);
+let last=performance.now();
+function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;
+ if(!$("game").hidden&&!st.done){let dx=(keys.arrowright||keys.d?1:0)-(keys.arrowleft||keys.a?1:0)+dir.x,dy=(keys.arrowdown||keys.s?1:0)-(keys.arrowup||keys.w?1:0)+dir.y;
+  if(dx||dy){tgt=null}else if(tgt){const ex=tgt.x-me.x,ey=tgt.y-me.y,d=Math.hypot(ex,ey);if(d<4)tgt=null;else{dx=ex/d;dy=ey/d}}
+  if(dx||dy){const m=Math.hypot(dx,dy)||1;me.x=Math.min(620,Math.max(20,me.x+dx/m*150*dt));me.y=Math.min(385,Math.max(25,me.y+dy/m*150*dt));pub()}
+  near=-1;let best=40;ST.forEach(([x,y],i)=>{const d=Math.hypot(x-me.x,y-me.y);if(d<best){best=d;near=i}});
+  $("act").hidden=near<0||!$("modal").hidden;if(near>=0)$("act").textContent="📦 Buka Soal "+(near+1)}
+ draw();requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+function draw(){cx.clearRect(0,0,640,400);cx.textAlign="center";
+ ZN.forEach(([x,y,c,n])=>{cx.fillStyle=c;cx.fillRect(x,y,320,200);cx.fillStyle="#3a332b";cx.font="bold 15px sans-serif";cx.fillText(n,x+160,y+20)});
+ cx.strokeStyle="rgba(0,0,0,.25)";cx.lineWidth=2;cx.strokeRect(1,1,638,398);cx.beginPath();cx.moveTo(320,0);cx.lineTo(320,400);cx.moveTo(0,200);cx.lineTo(640,200);cx.stroke();
+ cx.font="22px sans-serif";[["🌳",30,110],["🏪",300,170],["🏠",360,170],["🌳",610,170],["🌾",30,390],["🌽",300,380],["🌳",610,390],["📖",350,385]].forEach(([e,x,y])=>cx.fillText(e,x,y));
+ ST.forEach(([x,y],i)=>{const ok=st&&answered(i);cx.font="30px sans-serif";cx.fillText(ok?"✅":"📦",x,y+8);cx.font="bold 12px sans-serif";cx.fillStyle="#3a332b";cx.fillText(i+1,x,y+26);
+  if(i==near){cx.strokeStyle="#c2410c";cx.lineWidth=3;cx.beginPath();cx.arc(x,y,24,0,7);cx.stroke()}});
+ peers.forEach(p=>{const d=p.presence;if(!d||p.isMe||d.n==null)return;pl(d.x,d.y,d.e,d.n,false)});
+ if(st)pl(me.x,me.y,st.av,st.name,true)}
+function pl(x,y,e,n,me){cx.beginPath();cx.arc(x,y,17,0,7);cx.fillStyle="#fff";cx.fill();cx.lineWidth=me?3.5:2;cx.strokeStyle=me?"#c2410c":"#555";cx.stroke();
+ cx.font="20px sans-serif";cx.fillStyle="#000";cx.fillText(e||"🙂",x,y+7);
+ cx.font="bold 11px sans-serif";const w=cx.measureText(n).width+8;cx.fillStyle=me?"#c2410c":"rgba(40,40,40,.85)";cx.fillRect(x-w/2,y+20,w,15);cx.fillStyle="#fff";cx.fillText(n,x,y+31)}
+
+/* ---------- kelas (presence) ---------- */
+function pub(f){if(!room||!st)return;const t=Date.now();if(!f&&t-lastPub<200)return;lastPub=t;
+ room.presence({n:st.name,e:st.av,x:Math.round(me.x),y:Math.round(me.y),d:nAns()}).catch(()=>{})}
+let joined=false;function joinRoom(){if(joined||!room)return;joined=true;peers=room.peers();rl();room.onPeers(c=>{peers=c.peers;rl()});pub(true)}
+function rl(){const o=peers.filter(p=>!p.isMe&&p.presence&&p.presence.n!=null);
+ $("pl").innerHTML=o.length?o.map(p=>`<span class="chip">${esc(p.presence.e||"🙂")} ${esc(p.presence.n)} · ${p.presence.d||0}/10</span>`).join(""):'<span class="note">Belum ada teman lain yang online.</span>'}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- soal ---------- */
+function openQ(i){const q=Q[i],s=S[q.s],a=st.ans[i];let f="";
+ if(q.k=="one")f=q.o.map((o,j)=>`<label class="opt"><input type="radio" name="x" value="${j}" ${a===j?"checked":""}> ${L[j]}. ${esc(o)}</label>`).join("");
+ if(q.k=="multi")f=q.o.map((o,j)=>`<label class="opt"><input type="checkbox" name="x" value="${j}" ${a&&a.includes(j)?"checked":""}> ${L[j]}. ${esc(o)}</label>`).join("");
+ if(q.k=="tf")f='<div class="wrap"><table><tr><th>Pernyataan</th><th>Benar</th><th>Salah</th></tr>'+q.r.map((r,j)=>`<tr><td>${esc(r[0])}</td><td><input type="radio" name="r${j}" value="1" ${a&&a[j]===true?"checked":""}></td><td><input type="radio" name="r${j}" value="0" ${a&&a[j]===false?"checked":""}></td></tr>`).join("")+"</table></div>";
+ if(q.k=="match")f='<div class="wrap"><table>'+q.l.map((l,j)=>`<tr><td>${esc(l)}</td><td><select class="m"><option value="-1">pilih…</option>${q.o.map((o,k)=>`<option value="${k}" ${a&&a[j]===k?"selected":""}>${q.q.includes("nama")?"":L[k].toLowerCase()+". "}${esc(o)}</option>`).join("")}</select></td></tr>`).join("")+"</table></div>";
+ $("mbox").innerHTML=`<div class="story"><h3>Soal ${i+1} dari 10 · ${s.t}</h3><p>${s.p}</p>${FIG[q.s]()}</div><p><b>${esc(q.q)}</b></p>${f}<p><button id="sv">Simpan jawaban</button> <button class="alt" id="cl">Tutup</button></p><p class="note">Jawaban bisa diubah sampai kamu menekan Selesai.</p>`;
+ $("modal").hidden=false;$("act").hidden=true;
+ $("cl").onclick=()=>$("modal").hidden=true;
+ $("sv").onclick=()=>{const b=$("mbox");let v=null;
+  if(q.k=="one"){const c=b.querySelector("input:checked");v=c?+c.value:null}
+  if(q.k=="multi")v=[...b.querySelectorAll("input:checked")].map(c=>+c.value);
+  if(q.k=="tf")v=q.r.map((_,j)=>{const c=b.querySelector(`input[name=r${j}]:checked`);return c?c.value=="1":null});
+  if(q.k=="match")v=[...b.querySelectorAll("select")].map(x=>+x.value);
+  st.ans[i]=v;save();pub(true);$("prog").textContent=nAns()+"/10 terjawab";$("modal").hidden=true}}
+$("modal").onclick=e=>{if(e.target==$("modal")&&$("mbox").querySelector("#cl"))$("modal").hidden=true};
+
+/* ---------- selesai & nilai ---------- */
+function scoreQ(i){const q=Q[i],a=st.ans[i];if(a==null)return 0;
+ if(q.k=="one")return a===q.a?1:0;
+ if(q.k=="multi")return JSON.stringify([...a].sort())==JSON.stringify(q.a)?1:0;
+ if(q.k=="tf")return q.r.filter((r,j)=>a[j]===!!r[1]).length/q.r.length;
+ return q.a.filter((v,j)=>a[j]===v).length/q.a.length}
+function key(i){const q=Q[i];
+ if(q.k=="one")return L[q.a]+". "+q.o[q.a];
+ if(q.k=="multi")return q.a.map(j=>L[j]+". "+q.o[j]).join("; ");
+ if(q.k=="tf")return q.r.map((r,j)=>(j+1)+"="+(r[1]?"Benar":"Salah")).join(", ");
+ return q.l.map((l,j)=>l+" → "+q.o[q.a[j]]).join("; ")}
+$("fin").onclick=()=>{$("mbox").innerHTML=`<h3>Selesaikan sekarang?</h3><p>Kamu sudah menjawab <b>${nAns()}</b> dari 10 soal. Setelah selesai, jawaban tidak bisa diubah.</p><p><button id="y">Ya, selesai</button> <button class="alt" id="n">Lanjut mengerjakan</button></p>`;
+ $("modal").hidden=false;$("y").onclick=()=>finish(false);$("n").onclick=()=>$("modal").hidden=true};
+async function finish(auto){if(st.done)return;st.done=true;st.end=Date.now();const per=Q.map((_,i)=>scoreQ(i));st.per=per;st.score=Math.round(per.reduce((a,b)=>a+b,0)*10);save();
+ $("modal").hidden=true;$("game").hidden=true;clearInterval(tick.i);showRes(auto);
+ if(room)room.presence({n:null}).catch(()=>{});
+ await ready;try{if(db)await db.collection("results").doc(uid).set({name:st.name,av:st.av,status:"selesai",startedAt:st.start,finishedAt:st.end,score:st.score,per})}catch(e){$("res").insertAdjacentHTML("beforeend",'<p class="note">Nilai belum terkirim ke guru. Beri tahu gurumu.</p>')}}
+function showRes(auto){$("start").hidden=true;$("res").hidden=false;
+ $("res").innerHTML=`<h1>🏆 Petualangan selesai, ${esc(st.name)}!</h1>${auto?"<p>Waktu 1 jam habis, jawabanmu dikumpulkan otomatis.</p>":""}<div class="big">${st.score}<span style="font-size:1rem;color:var(--muted)"> / 100</span></div>
+ <div class="wrap"><table><tr><th>Soal</th><th>Hasil</th><th>Jawaban yang tepat</th></tr>${Q.map((q,i)=>{const p=st.per[i];return `<tr><td>${i+1}</td><td class="${p==1?"ok":p>0?"half":"no"}">${p==1?"✓ Benar":p>0?"◐ Sebagian":"✗ Salah"}</td><td>${esc(key(i))}</td></tr>`}).join("")}</table></div><p><button id="home">🏠 Kembali ke Beranda</button></p>`;$("home").onclick=home}
+function home(){$("res").hidden=true;$("game").hidden=true;$("start").hidden=false;const d=!!(st&&st.done);$("go").disabled=d;$("nm").disabled=d;$("seeres").hidden=!d;$("hm").hidden=!d;$("rp").hidden=!d;if(d)$("nm").value=st.name}
+$("seeres").onclick=()=>showRes(false);
+const REPLAY_HASH="aea596a5a6b89223c6d6ea924d63eed8f24d708d6d62006bca66c5d7da6c9ffb";
+$("rbtn").onclick=async()=>{if(await sha($("rpw").value.trim())!==REPLAY_HASH){$("rm").textContent="Kata sandi salah.";return}st=null;try{localStorage.removeItem("tka_state")}catch(e){}$("rpw").value="";$("rm").textContent="";me.x=0;me.y=0;home()};
+
+/* ---------- ruang guru ---------- */
+async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+let unsub=null;
+function teacher(){$("mbox").innerHTML=`<h3>🔒 Ruang Guru</h3><p><input type="password" id="pw" placeholder="Kata sandi"> <button id="ok">Masuk</button> <button class="alt" id="cl">Tutup</button></p><p id="tm" class="note"></p>`;
+ $("modal").hidden=false;$("cl").onclick=()=>{unsub&&unsub();$("modal").hidden=true};
+ $("ok").onclick=async()=>{if(await sha($("pw").value)!==PASS_HASH){$("tm").textContent="Kata sandi salah.";return}
+  await ready;let own=false;try{own=usr&&(await usr.isOwner()||await usr.canEdit())}catch(e){}
+  if(!db||!own){$("tm").textContent="Nilai hanya dapat dibaca oleh akun pemilik. Buka halaman ini dari akun guru yang membuatnya.";return}
+  $("mbox").innerHTML='<h3>📊 Nilai Semua Murid</h3><div id="tb">Memuat…</div><p><button class="alt" id="cl">Tutup</button> <button id="csv">Unduh CSV</button></p>';
+  $("cl").onclick=()=>{unsub&&unsub();$("modal").hidden=true};let rows=[];$("tb").onclick=e=>{const b=e.target.closest("button");if(!b)return;const all=b.id=="delall";if(!all&&!b.classList.contains("del"))return;if(!b.dataset.s){b.dataset.s=1;const t=b.textContent;b.textContent="Yakin hapus?";setTimeout(()=>{delete b.dataset.s;b.textContent=t},3000);return}const ids=all?rows.map(r=>r.id):[b.dataset.id];Promise.all(ids.map(id=>db.collection("results").doc(id).delete())).catch(()=>{const n=document.createElement("p");n.className="note";n.textContent="Gagal menghapus. Coba lagi.";$("tb").prepend(n)})};
+  unsub=db.collection("results").onSnapshot(sn=>{rows=sn.docs.map(d=>({...d.data(),id:d.id})).sort((a,b)=>(b.score??-1)-(a.score??-1));
+   const fin=rows.filter(r=>r.status=="selesai"),avg=fin.length?Math.round(fin.reduce((a,r)=>a+r.score,0)/fin.length):"-";
+   $("tb").innerHTML=`<p>Selesai: <b>${fin.length}</b> · Mengerjakan: <b>${rows.length-fin.length}</b> · Rata-rata: <b>${avg}</b> · Online: <b>${peers.filter(p=>p.presence&&p.presence.n!=null).length}</b> <button class="alt" id="delall">🗑 Hapus semua</button></p><div class="wrap"><table><tr><th>Nama</th><th>Status</th><th>Nilai</th>${Q.map((_,i)=>`<th>${i+1}</th>`).join("")}<th></th></tr>${rows.map(r=>`<tr><td>${esc(r.av||"")} ${esc(r.name)}</td><td>${r.status}</td><td><b>${r.score??"-"}</b></td>${Q.map((_,i)=>{const p=r.per&&r.per[i];return `<td class="${p==1?"ok":p>0?"half":"no"}">${p==null?"":p==1?"✓":p>0?"◐":"✗"}</td>`}).join("")}<td><button class="alt del" data-id="${esc(r.id)}">🗑</button></td></tr>`).join("")}</table></div>`},
+   e=>$("tb").textContent="Tidak bisa membaca data: "+(e&&e.message||"akses ditolak"));
+  $("csv").onclick=async()=>{const d=await claude.use("downloads");if(!d)return;const t=["Nama,Status,Nilai,"+Q.map((_,i)=>"S"+(i+1)).join(",")].concat(rows.map(r=>[JSON.stringify(r.name),r.status,r.score??"",...Q.map((_,i)=>r.per?Math.round(r.per[i]*100)/100:"")].join(","))).join("\n");try{await d.save({filename:"nilai-pecahan.csv",data:t})}catch(e){}}}}
+$("tbtn1").onclick=$("tbtn2").onclick=teacher;
+
+/* ---------- lanjutkan sesi ---------- */
+ready.then(joinRoom);
+ready.then(async()=>{if(!(st&&st.done&&db))return;try{const d=await db.collection("results").doc(uid).get();if(!d.exists){st=null;try{localStorage.removeItem("tka_state")}catch(e){}$("res").hidden=true;$("game").hidden=true;$("start").hidden=false;$("go").disabled=false;$("nm").disabled=false;$("seeres").hidden=true;$("hm").hidden=true;$("rp").hidden=true}}catch(e){}});
+if(st&&st.start){if(st.done)showRes(false);else{if(Date.now()-st.start>3600000)finish(true);else enter()}}
+</script>
+</body>
+</html>
